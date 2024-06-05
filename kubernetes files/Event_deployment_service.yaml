@@ -1,0 +1,51 @@
+# Yaml code for creating a deployment and service of episode 1 backend
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: Event-deployment
+  labels:
+    app: Event
+
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: Event
+  
+  template:
+    metadata:
+      labels:
+        app: Event
+    spec:
+      # this is the specification of pods
+      containers:
+        - name: containerEvent
+          image: muqeem/Event:latest
+          ports:
+           - containerPort: 4009
+          env:
+            - name: MONGO_URL
+              value: "mongodb://mongodb-service/scdfinalexam"
+            - name: AUTH_SERVICE
+              value: "external service of Auth microservice deployment"
+            - name: CLASSROOMS_SERVICE
+              value: "external service of CLASSROOMS microservice deployment"
+
+---
+# Yaml for making the external service for Event deployment
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: Event-service
+
+spec:
+  type: NodePort
+  selector:
+    app: Event
+
+  ports:
+    - protocol: TCP
+      port: 4009
+      targetPort: 4009
+      nodePort: 32013

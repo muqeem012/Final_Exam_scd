@@ -1,0 +1,55 @@
+version: "3.8"
+
+services:
+
+    frontend:
+      build: ./client
+      ports:
+        - 80:1891
+      env:
+        -AUTH_SERVICE="http://backend-Auth"
+        -CLASSROOM_SERVICE="http://backend-Classrooms"
+        -POST_SERVICE="http://backend-Post"
+
+    backend-Auth:
+      build: ./Auth
+      ports:
+        - 4000:2092
+      env:
+        -MONGO_URL="mongodb://mongodb/scdfinalexam"
+        -EVENT_SERVICE="http://backend-Event"
+
+    backend-Classrooms:
+      build: ./Classrooms
+      ports:
+        - 4001:2093
+      env:
+        -MONGO_URL="mongodb://mongodb/scdfinalexam"
+        -EVENT_SERVICE="http://backend-Event"
+
+    backend-Event:
+      build: ./event-bus
+      ports:
+        - 4009:2094
+      env:
+        -AUTH_SERVICE="http://backend-Auth"
+        -CLASSROOM_SERVICE="http://backend-Classrooms"
+        -POST_SERVICE="http://backend-Post"
+
+    backend-Post:
+      build: ./Post
+      ports:
+        - 4002:2095
+      env:
+        -MONGO_URL="mongodb://mongodb/scdfinalexam"
+        -EVENT_SERVICE="http://backend-Event"
+
+    mongodb:
+      image: mongo:4.2
+      ports:
+        - 27017:27017
+      volumes:
+        - scdfinalexam:/data/db
+
+volumes:
+  scdfinalexam:
